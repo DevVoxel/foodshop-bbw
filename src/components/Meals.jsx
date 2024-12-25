@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import MealItem from "./MealItem";
+import Button from "./UI/Button";
 export default function Meals() {
   const [loadedMeals, setLoadedMeals] = useState([]);
+  const [isSorted, setIsSorted] = useState(false);
+  const [sortedMeals, setSortedMeals] = useState([]);
 
   useEffect(() => {
     async function fetchMeals() {
@@ -23,11 +26,23 @@ export default function Meals() {
     fetchMeals();
   }, []);
 
+  useEffect(() => {
+    if (isSorted) {
+      const sorted = [...loadedMeals].sort((a, b) => a.price - b.price);
+      setSortedMeals(sorted);
+    } else {
+      setSortedMeals([...loadedMeals]);
+    };
+  }, [isSorted, loadedMeals]);
+
   return (
-    <ul id="meals">
-      {loadedMeals.map((meal) => (
-        <MealItem key={meal.id} meal={meal} />
-      ))}
-    </ul>
+    <>
+      <Button onClick = {() => setIsSorted(!isSorted)}>Toggle Sort</Button>
+      <ul id="meals">
+        {sortedMeals.map((meal) => (
+          <MealItem key={meal.id} meal={meal} />
+        ))}
+      </ul>
+    </>
   );
 }
