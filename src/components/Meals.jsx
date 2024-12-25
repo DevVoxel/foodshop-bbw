@@ -5,15 +5,19 @@ export default function Meals() {
 
   useEffect(() => {
     async function fetchMeals() {
-      const response = await fetch("http://localhost:3000/meals");
+      try {
+        const response = await fetch("http://localhost:3000/meals");
 
-      if (!response.ok) {
-        //..
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const meals = await response.json();
+        console.log("meals", meals);
+        setLoadedMeals(meals);
+      } catch (error) {
+        console.error("Failed to fetch meals:", error);
       }
-
-      const meals = await response.json();
-      console.log("meals", meals);
-      setLoadedMeals(meals);
     }
 
     fetchMeals();
@@ -22,7 +26,7 @@ export default function Meals() {
   return (
     <ul id="meals">
       {loadedMeals.map((meal) => (
-        <li>{meal.name}</li>
+        <MealItem key={meal.id} meal={meal} />
       ))}
     </ul>
   );
